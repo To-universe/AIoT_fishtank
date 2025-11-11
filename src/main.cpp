@@ -42,6 +42,10 @@ DallasTemperature sensors(&onewire);
 //温度调节
 float temp_stand;
 
+//定时
+static unsigned long currentTime;
+static unsigned long reportTime;
+
 // put function declarations here:
 float PHValueRead();
 float TDSValueRead();
@@ -70,21 +74,30 @@ void setup() {
 
   temp_stand = 25.0;
 
+  currentTime = millis();
+  reportTime = millis();
+
   //-----------MQTT连接---------------------
   Serial.begin(115200,SERIAL_8N1);
   mySerial.begin(115200,SERIAL_8N1,19,23);
   analogReadResolution(10);
 
-  setupWiFi();
-
+  setupWiFi();//连接WiFi
+  setupMQTT();//初始化MQTT
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  //检查MQTT连接，断开则重连
+  if (!client.connected()){
+    reconnectMQTT();
+  }
+  client.loop();
+  
+
   //----------------传感器读取--------------------
   tdsCalibrationProcess();
   gravityTDS.update();
-  static unsigned long currentTime = millis();
   if(millis()-currentTime>1000U){
      currentTime = millis();
     //浊度传感器
@@ -107,7 +120,11 @@ void loop() {
     Serial.println("---------------------");
   }
 
-  
+  //每5s上报传感器数据
+  if(millis()-reportTime >5000){
+    reportTime = millis();
+    publishSensorData();
+  }
 
 //-----------------灯带控制---------------------
   for (int i = 0; i < MAX_LED; i++){
