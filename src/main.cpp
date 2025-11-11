@@ -19,17 +19,14 @@ uint32_t color = strip.Color(75,156,215);   //绿、红、蓝
 #define PHSensorPIN 35    //模拟引脚
 #define Offset 0.15
 unsigned long int avgValue;
-float ph;
 
 //浊度（TDS）传感器
   //已被确定为32引脚，如需改动则进入include\GravityTDS.h
 extern GravityTDS gravityTDS;
 unsigned long tdsValue;
-int gravity_adc = 0;
 
 //Water Sensor水位传感器
 #define Water_Sensor_PIN 34
-int waterlevel;
 
 //水泵
 #define PumpPin 25
@@ -38,7 +35,6 @@ int waterlevel;
 #define ONE_WIRE_PIN 4
 OneWire onewire(ONE_WIRE_PIN);
 DallasTemperature sensors(&onewire);
-float temp;
 
 //加热棒
 #define HEAT_PIN 16
@@ -73,6 +69,14 @@ void setup() {
   pinMode(HEAT_PIN,OUTPUT);
 
   temp_stand = 25.0;
+
+  //-----------MQTT连接---------------------
+  Serial.begin(115200,SERIAL_8N1);
+  mySerial.begin(115200,SERIAL_8N1,19,23);
+  analogReadResolution(10);
+
+  setupWiFi();
+
 }
 
 void loop() {

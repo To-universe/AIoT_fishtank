@@ -37,6 +37,13 @@ const int   MQTT_PORT     = 1883;
 
 //全局变量
 long lastReportTime = 0;
+float temp;                 //温度传感器数据
+int waterlevel;             //水位数据
+int gravity_adc = 0;        //浊度数据
+float ph;                   //ph数据
+int heat_state;             //加热棒状态
+int pump_state;             //水泵状态
+int light_mode;             //灯带模式
 
 //函数声明
 void setupWiFi();
