@@ -1,11 +1,31 @@
 #include "MQTT.h"
+//变量定义
+const char* wifi_ssid = "";           //WiFi名称
+const char* wifi_password = "";       //WiFi密码
+//华为云设备信息
+const char* CLIENT_ID     = "";
+const char* MQTT_USER     = "";
+const char* MQTT_PASSWORD = "";
+const char* MQTT_SERVER   = "";  // 华为云MQTT服务器地址
+const int   MQTT_PORT     = 1883;
+float temp;                 //温度传感器数据
+int waterlevel;             //水位数据
+int gravity_adc=0;          //浊度数据
+float ph;                   //ph数据
+int heat_state;             //加热棒状态
+int pump_state;             //水泵状态
+int light_mode;             //灯带模式
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+HardwareSerial mySerial(1);  // 串口1
 
 /**
  * @brief 连接WiFi网络
  */
 void setupWiFi(){
-    Serial.printf("正在连接WiFi: %s ...\n", ssid);
-    WiFi.begin(ssid, password);
+    Serial.printf("正在连接WiFi: %s ...\n", wifi_ssid);
+    WiFi.begin(wifi_ssid, wifi_password);
   
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
