@@ -72,7 +72,7 @@ void setup() {
 
   pinMode(HEAT_PIN,OUTPUT);
 
-  temp_stand = 25.0;
+  temp_stand = 0;
 
   currentTime = millis();
   reportTime = millis();
