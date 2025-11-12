@@ -107,7 +107,7 @@ void loop() {
     tdsValue=TDSValueRead();
     Serial.println("-------------------");
     //DS18B20温度传感器
-    temp = temperatureRead();
+    temp = TempRead();
     Serial.print("温度为：");
     Serial.println(temp);
     //PH传感器
