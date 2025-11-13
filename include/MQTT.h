@@ -18,8 +18,8 @@ extern const char* wifi_password;      //WiFi密码
 
 // 华为云设备信息（三元组）
 // 三元组生成链接：https://iot-tool.obs-website.cn-north-4.myhuaweicloud.com/
-#define DEVICE_ID        ""
-#define DEVICE_SECRET    ""
+#define DEVICE_ID        "6913458c2447a4269a5d91b4_ESP32"
+#define DEVICE_SECRET    "XYL2006060605"
 extern const char* CLIENT_ID;
 extern const char* MQTT_USER;
 extern const char* MQTT_PASSWORD;
@@ -38,7 +38,7 @@ extern const int   MQTT_PORT;
 //全局变量
 extern float temp;                 //温度传感器数据
 extern int waterlevel;             //水位数据
-extern int gravity_adc;        //浊度数据
+extern unsigned long tdsValue;        //浊度数据
 extern float ph;                   //ph数据
 extern int heat_state;             //加热棒状态
 extern int pump_state;             //水泵状态
@@ -46,10 +46,12 @@ extern int light_mode;             //灯带模式
 extern float temp_stand;            //设定温度
 
 #define LIGHT_CLOSE 0
-#define LIGHT_EMERG 1
-#define LIGHT_MODE1 2
-#define LIGHT_MODE2 3
-#define LIGHT_MODE3 4
+#define LIGHT_NORM 1
+#define LIGHT_WARN 2
+#define LIGHT_ERROR 3
+#define LIGHT_MODE1 4
+#define LIGHT_MODE2 5
+#define LIGHT_MODE3 6
 
 //函数声明
 void setupWiFi();

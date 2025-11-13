@@ -75,21 +75,21 @@ void setup() {
   reportTime = millis();
 
   //-----------MQTT连接---------------------
-  // Serial.begin(115200,SERIAL_8N1);
-  // mySerial.begin(115200,SERIAL_8N1,19,23);
-  // analogReadResolution(10);
+  Serial.begin(115200,SERIAL_8N1);
+  mySerial.begin(115200,SERIAL_8N1,19,23);
+  analogReadResolution(10);
 
-  // setupWiFi();//连接WiFi
-  // setupMQTT();//初始化MQTT
+  setupWiFi();//连接WiFi
+  setupMQTT();//初始化MQTT
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   //检查MQTT连接，断开则重连
-  // if (!client.connected()){
-  //   reconnectMQTT();
-  // }
-  // client.loop();
+  if (!client.connected()){
+    reconnectMQTT();
+  }
+  client.loop();
   
 
   //----------------传感器读取--------------------
@@ -98,30 +98,20 @@ void loop() {
   if(millis()-currentTime>5000){
      currentTime = millis();
     //浊度传感器
-    gravity_adc = analogRead(32);
-    Serial.print("原始ADC值：");
-    Serial.println(gravity_adc);
     tdsValue=TDSValueRead();
-    Serial.println("-------------------");
     //DS18B20温度传感器
     temp = TempRead();
-    Serial.print("温度为：");
-    Serial.println(temp);
     //PH传感器
-    ph = PHValueRead();
-    Serial.println("--------------");
+    ph = PHValueRead()-7;
     //水位传感器
     waterlevel =waterLevelRead();
-    Serial.print("当前水位值：");
-    Serial.println(waterlevel);
-    Serial.println("---------------------");
   }
 
   //每5s上报传感器数据
-  // if(millis()-reportTime >5000){
-  //   reportTime = millis();
-  //   publishSensorData();
-  // }
+  if(millis()-reportTime >5000){
+    reportTime = millis();
+    publishSensorData();
+  }
 
 //-----------------灯带控制---------------------
 if(temp > 27){
@@ -167,11 +157,6 @@ float PHValueRead(){
     avgValue+=buf[i];
   float phValue=(float)avgValue*5.0/1024/6;
   float PH = 14-5.112*(phValue-1.758)*Offset;
-  Serial.print("phValue:");
-  Serial.print(phValue,4);
-  Serial.print("     pH:");
-  Serial.print(PH,2);
-  Serial.println(" ");
   return PH;
 }
 /**
@@ -179,8 +164,6 @@ float PHValueRead(){
  * @brief 获取浊度传感器的数据
  */
 float TDSValueRead(){
-  Serial.print(gravityTDS.getValue());
-  Serial.println("  ppm");
   return gravityTDS.getValue();
 }
 /**
@@ -195,7 +178,5 @@ int waterLevelRead(){
  */
 float TempRead(){
   sensors.requestTemperatures();
-  Serial.println("温度数据请求完成");
-  Serial.println(sensors.getTempCByIndex(0));
   return sensors.getTempCByIndex(0);
 }

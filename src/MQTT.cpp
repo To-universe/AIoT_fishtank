@@ -1,12 +1,12 @@
 #include "MQTT.h"
 //变量定义
-const char* wifi_ssid = "";           //WiFi名称
-const char* wifi_password = "";       //WiFi密码
+const char* wifi_ssid = "XJJ's Find X7";           //WiFi名称
+const char* wifi_password = "u2cqxxr3";       //WiFi密码
 //华为云设备信息
-const char* CLIENT_ID     = "";
-const char* MQTT_USER     = "";
-const char* MQTT_PASSWORD = "";
-const char* MQTT_SERVER   = "";  // 华为云MQTT服务器地址
+const char* CLIENT_ID     = "6913458c2447a4269a5d91b4_ESP32_0_0_2025111311";
+const char* MQTT_USER     = "6913458c2447a4269a5d91b4_ESP32";
+const char* MQTT_PASSWORD = "b2a16bb6b3f14b49c09371e45170791c8178adaa393d49869665efb75c1a17ef";
+const char* MQTT_SERVER   = "14aac91662.st1.iotda-device.cn-east-3.myhuaweicloud.com";  // 华为云MQTT服务器地址
 const int   MQTT_PORT     = 1883;
 float temp;                 //温度传感器数据
 int waterlevel;             //水位数据
@@ -73,104 +73,102 @@ void reconnectMQTT() {
  * @brief 上报传感器数据到华为云平台
  */
 void publishSensorData() {
-//   // 读取传感器数据
-//   photoResistorValue = analogRead(PHOTORESISTOR_PIN);
-//   temperature = bmp280.readTemperature();
+// 假设传感器数据已通过其他函数更新到全局变量
+    // 打印传感器数据到串口
+    Serial.printf("温度: %.2f *C\n", temp);
+    Serial.printf("水位: %d\n", waterlevel);
+    Serial.printf("浊度: %d\n", tdsValue);
+    Serial.printf("pH值: %.2f\n", ph);
+    Serial.printf("加热棒状态: %d\n", heat_state);
+    Serial.printf("水泵状态: %d\n", pump_state);
+    Serial.printf("灯带模式: %d\n", light_mode);
   
-//   // 打印传感器数据到串口
-//   Serial.printf("光敏电阻值: %d\n", photoResistorValue);
-//   Serial.printf("温度: %.2f *C\n", temperature);
+    // 构建JSON消息
+    char properties[256];
+    char jsonBuf[512];
   
-//   // 构建JSON消息
-//   char properties[256];
-//   char jsonBuf[512];
+    sprintf(properties, 
+            "\"温度\":%.2f,\"水位\":%d,\"浊度\":%d,\"PH\":%.2f,\"加热棒状态\":%d,\"水泵状态\":%d,\"灯带颜色\":%d}}]}",
+            temp, waterlevel, tdsValue, ph, heat_state, pump_state, light_mode);
   
-//   sprintf(properties, 
-//           "\"Temperature\":%.2f,\"Photores\":%d,\"RED\":%d,\"GREEN\":%d,\"BLUE\":%d,\"Switch\":%d}}]}",
-//           temperature, photoResistorValue, redValue, greenValue, blueValue, deviceSwitch);
+    sprintf(jsonBuf, MQTT_BODY_FORMAT, properties);
   
-//   sprintf(jsonBuf, MQTT_BODY_FORMAT, properties);
-  
-//   // 发布消息
-//   client.publish(MQTT_TOPIC_REPORT, jsonBuf);
-//   Serial.println("上报数据:");
-//   Serial.println(jsonBuf);
-//   Serial.println("MQTT数据上报成功");
+    // 发布消息
+    client.publish(MQTT_TOPIC_REPORT, jsonBuf);
+    Serial.println("上报数据:");
+    Serial.println(jsonBuf);
+    Serial.println("MQTT数据上报成功");
 }
 
 /**
  * @brief MQTT消息回调函数，处理平台下发的命令
  */
 void callback(char* topic, byte* payload, unsigned int length) {
-//   Serial.println("\n接收平台下发消息");
-//   Serial.print("主题: ");
-//   Serial.println(topic);
+    Serial.println("\n接收平台下发消息");
+    Serial.print("主题: ");
+    Serial.println(topic);
   
-//   // 为payload添加结束符
-//   payload[length] = '\0';
-//   Serial.print("内容: ");
-//   Serial.println((char*)payload);
+    // 为payload添加结束符
+    payload[length] = '\0';
+    Serial.print("内容: ");
+    Serial.println((char*)payload);
   
-//   // 处理命令下发
-//   if (strstr(topic, MQTT_TOPIC_COMMANDS)) {
-//     DynamicJsonDocument doc(256);
-//     DeserializationError error = deserializeJson(doc, payload);
+    // 处理命令下发
+    if (strstr(topic, MQTT_TOPIC_COMMANDS)) {
+        DynamicJsonDocument doc(256);
+        DeserializationError error = deserializeJson(doc, payload);
     
-//     if (error) {
-//       Serial.println("JSON解析失败");
-//       return;
-//     }
+        if (error) {
+            Serial.println("JSON解析失败");
+            return;
+        }
     
-//     // 提取RGB颜色值和开关状态
-//     redValue = doc["paras"]["RED"];
-//     greenValue = doc["paras"]["GREEN"];
-//     blueValue = doc["paras"]["BLUE"];
-//     deviceSwitch = doc["paras"]["Switch"];
+        // 提取控制参数
+        if (doc["paras"].containsKey("HeatState")) {
+            heat_state = doc["paras"]["HeatState"];
+        }
+        if (doc["paras"].containsKey("PumpState")) {
+            pump_state = doc["paras"]["PumpState"];
+        }
+        if (doc["paras"].containsKey("LightMode")) {
+            light_mode = doc["paras"]["LightMode"];
+        }
     
-//     // 打印接收到的参数
-//     Serial.println("解析的参数:");
-//     Serial.printf("RED: %d, GREEN: %d, BLUE: %d, Switch: %d\n", 
-//                   redValue, greenValue, blueValue, deviceSwitch);
+        // 打印接收到的参数
+        Serial.println("解析的参数:");
+        Serial.printf("HeatState: %d, PumpState: %d, LightMode: %d\n", 
+                      heat_state, pump_state, light_mode);
     
-//     // 控制LED
-//     if (deviceSwitch) {
-//       analogWrite(RED_LED, 255 - redValue);
-//       analogWrite(GREEN_LED, 255 - greenValue);
-//       analogWrite(BLUE_LED, 255 - blueValue);
-//     } else {
-//       // 关闭LED
-//       analogWrite(RED_LED, 255);
-//       analogWrite(GREEN_LED, 255);
-//       analogWrite(BLUE_LED, 255);
-//     }
+        // （假设硬件控制逻辑由其他函数处理）
+        // 这里仅更新全局变量，实际控制需根据硬件实现
+            
+        // 提取request_id用于响应
+        char requestId[100] = {0};
+        char* pstr = topic;
+        char* p = requestId;
+        int flag = 0;
     
-//     // 提取request_id用于响应
-//     char requestId[100] = {0};
-//     char* pstr = topic;
-//     char* p = requestId;
-//     int flag = 0;
+        while (*pstr) {
+            if (flag) *p++ = *pstr;
+            if (*pstr == '=') flag = 1;
+            pstr++;
+        }
+        *p = '\0';
     
-//     while (*pstr) {
-//       if (flag) *p++ = *pstr;
-//       if (*pstr == '=') flag = 1;
-//       pstr++;
-//     }
-//     *p = '\0';
+        Serial.print("Request ID: ");
+        Serial.println(requestId);
     
-//     Serial.print("Request ID: ");
-//     Serial.println(requestId);
+        // 构建响应主题并发送响应
+        char responseTopic[200] = {0};
+        strcat(responseTopic, MQTT_TOPIC_CMD_RESPONSE);
+        strcat(responseTopic, requestId);
     
-//     // 构建响应主题并发送响应
-//     char responseTopic[200] = {0};
-//     strcat(responseTopic, MQTT_TOPIC_CMD_RESPONSE);
-//     strcat(responseTopic, requestId);
-    
-//     sendCommandResponse(responseTopic);
-//   }
-//   // 处理其他下行消息
-//   else if (strstr(topic, MQTT_TOPIC_GET)) {
-//     Serial.println("接收到下行消息，未处理");
-//   }
+        sendCommandResponse(responseTopic);
+    }
+    // 处理其他下行消息
+    else if (strstr(topic, MQTT_TOPIC_GET)) {
+        Serial.println("接收到下行消息，未处理");
+    }
 }
 
 /**

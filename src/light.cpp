@@ -32,7 +32,7 @@ void light_norm(){
 }
 void light_warning(){
     for(int i =0;i<30;i++){
-        strip.setPixelColor(i,strip.Color(200,200,0));
+        strip.setPixelColor(i,strip.Color(150,200,0));
     }
     strip.show();
 }
