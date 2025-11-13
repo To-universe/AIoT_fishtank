@@ -43,6 +43,7 @@ extern float ph;                   //ph数据
 extern int heat_state;             //加热棒状态
 extern int pump_state;             //水泵状态
 extern int light_mode;             //灯带模式
+extern float temp_stand;            //设定温度
 
 #define LIGHT_CLOSE 0
 #define LIGHT_EMERG 1
