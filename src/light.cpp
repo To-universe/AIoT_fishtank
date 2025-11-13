@@ -1,0 +1,44 @@
+#include "light.h"
+
+unsigned long lasttime = 0;
+uint8_t headIndex = 0;
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel( MAX_LED, PIN, NEO_RGB + NEO_KHZ800 );
+uint8_t i = 0;                            
+uint32_t color = strip.Color(75,156,215);   //绿、红、蓝
+
+void light_test(){
+    unsigned long now = millis();
+    if(now - lasttime > 500){
+        lasttime = now;
+        strip.setPixelColor(headIndex,strip.Color(0,0,0));
+        headIndex = (headIndex +1)%MAX_LED;
+        strip.setPixelColor(headIndex,color);
+        strip.show();
+    }
+}
+
+void light_close(){
+    for(int i = 0;i<30;i++){
+        strip.setPixelColor(i,strip.Color(0,0,0));
+    }
+    strip.show();
+}
+void light_norm(){
+    for(int i =0;i<30;i++){
+        strip.setPixelColor(i,strip.Color(200,0,0));
+    }
+    strip.show();
+}
+void light_warning(){
+    for(int i =0;i<30;i++){
+        strip.setPixelColor(i,strip.Color(200,200,0));
+    }
+    strip.show();
+}
+void light_error(){
+    for(int i =0;i<30;i++){
+        strip.setPixelColor(i,strip.Color(0,200,0));
+    }
+    strip.show();
+}

@@ -1,19 +1,16 @@
 #include <Arduino.h>
-#include "Adafruit_NeoPixel.h"
 #include <EEPROM.h>
 #include "GravityTDS.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include "MQTT.h"
+#include "light.h"
 
 // put global variables here:
 //RGB灯带
-#define PIN 5                        // Define the pins of the RGB light
-#define MAX_LED 10                   //64 RGB light
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel( MAX_LED, PIN, NEO_RGB + NEO_KHZ800 );
-uint8_t i = 0;                            
-uint32_t color = strip.Color(75,156,215);   //绿、红、蓝
+
+
 
 //PH传感器
 #define PHSensorPIN 35    //模拟引脚
@@ -98,7 +95,7 @@ void loop() {
   //----------------传感器读取--------------------
   tdsCalibrationProcess();
   gravityTDS.update();
-  if(millis()-currentTime>1000){
+  if(millis()-currentTime>5000){
      currentTime = millis();
     //浊度传感器
     gravity_adc = analogRead(32);
@@ -127,16 +124,11 @@ void loop() {
   // }
 
 //-----------------灯带控制---------------------
-  for (int i = 0; i < MAX_LED; i++){
-    strip.setPixelColor(i,color);
-    strip.show();
-    delay(500);
-  }
-  for (int i = 0;i <MAX_LED;i++){
-    strip.setPixelColor(i,strip.Color(0,0,0));
-    strip.show();
-    delay(500);
-  }
+if(temp > 27){
+  light_warning();
+}else{
+  light_norm();
+}
   
 //----------------水温控制---------------
   if(temp > temp_stand+5.0){
