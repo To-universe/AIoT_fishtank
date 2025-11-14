@@ -1,12 +1,12 @@
 #include "MQTT.h"
 //-----------------变量定义（WIFI变量）-----------------
-const char* wifi_ssid = "XJJ's Find X7";           //WiFi名称
-const char* wifi_password = "u2cqxxr3";       //WiFi密码
+const char* wifi_ssid = "";           //WiFi名称
+const char* wifi_password = "";       //WiFi密码
 //---------------华为云设备信息------------------
-const char* CLIENT_ID     = "6913458c2447a4269a5d91b4_ESP32_0_0_2025111311";
-const char* MQTT_USER     = "6913458c2447a4269a5d91b4_ESP32";
-const char* MQTT_PASSWORD = "b2a16bb6b3f14b49c09371e45170791c8178adaa393d49869665efb75c1a17ef";
-const char* MQTT_SERVER   = "14aac91662.st1.iotda-device.cn-east-3.myhuaweicloud.com";  // 华为云MQTT服务器地址
+const char* CLIENT_ID     = "";
+const char* MQTT_USER     = "";
+const char* MQTT_PASSWORD = "";
+const char* MQTT_SERVER   = "";  // 华为云MQTT服务器地址
 const int   MQTT_PORT     = 1883;
 
 //-------------全局变量定义（传感器变量）---------------

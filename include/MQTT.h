@@ -18,8 +18,8 @@ extern const char* wifi_password;      //WiFi密码
 
 // 华为云设备信息（三元组）
 // 三元组生成链接：https://iot-tool.obs-website.cn-north-4.myhuaweicloud.com/
-#define DEVICE_ID        "6913458c2447a4269a5d91b4_ESP32"
-#define DEVICE_SECRET    "XYL2006060605"
+#define DEVICE_ID        ""
+#define DEVICE_SECRET    ""
 extern const char* CLIENT_ID;
 extern const char* MQTT_USER;
 extern const char* MQTT_PASSWORD;
