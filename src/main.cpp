@@ -7,10 +7,6 @@
 #include "light.h"
 
 // put global variables here:
-//RGB灯带
-
-
-
 
 //PH传感器
 #define PHSensorPIN 35    //模拟引脚
@@ -44,40 +40,39 @@ static unsigned long currentTime;
 static unsigned long reportTime;
 
 // put function declarations here:
-float PHValueRead();
-float TDSValueRead();
-int waterLevelRead();
-float TempRead();
+float PHValueRead();            //PH值读取
+float TDSValueRead();           //浊度值读取
+int waterLevelRead();           //水位数据读取
+float TempRead();               //温度数据读取
 
 /**
  * Function:  setup
  */
 void setup() {
   // put your setup code here, to run once:
-  strip.begin();
+  strip.begin();                    //初始化灯带
   strip.show();
 
-  pinMode(13,OUTPUT);
-  Serial.begin(115200);
-  Serial.println("Ready");
+  Serial.begin(115200);             //初始化串口
 
-  gravityTDS.setup();
+  gravityTDS.setup();               //初始化浊度传感器
 
-  pinMode(PumpPin,OUTPUT);
+  pinMode(PumpPin,OUTPUT);          //初始化水泵
+  digitalWrite(PumpPin,LOW);
 
   sensors.begin();//初始化总线
 
-  pinMode(HEAT_PIN,OUTPUT);
+  pinMode(HEAT_PIN,OUTPUT);         //初始化加热棒
 
-  temp_stand = 20;
+  temp_stand = 20;                  //设定温度参考值
 
   currentTime = millis();
   reportTime = millis();
 
-  heat_state = 0;
-  pump_state = 0;
+  heat_state = 0;                   //设定加热棒状态
+  pump_state = 0;                   //设定水泵状态
   pump_state_control=0;
-  light_mode = LIGHT_NORM;
+  light_mode = LIGHT_NORM;          //设定灯带状态
 
   //-----------MQTT连接---------------------
   Serial.begin(115200,SERIAL_8N1);
@@ -100,7 +95,7 @@ void loop() {
   //----------------传感器读取--------------------
   tdsCalibrationProcess();
   gravityTDS.update();
-  if(millis()-currentTime>5000){
+  if(millis()-currentTime>5000){      //每5s读取一次所有传感器的数据
      currentTime = millis();
     //浊度传感器
     tdsValue=TDSValueRead();
@@ -123,7 +118,7 @@ if(light_mode==LIGHT_CLOSE){
   light_close();
 }else if(light_mode == LIGHT_NORM){
   if(
-    0     //temp > temp_stand+10||tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3
+    temp > temp_stand+10||tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3
   )
   {
     light_error();
@@ -132,7 +127,7 @@ if(light_mode==LIGHT_CLOSE){
   }
 }else if(light_mode== LIGHT_MODE1){
   if(
-    0     //temp > temp_stand+10||tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3
+    temp > temp_stand+10||tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3
   )
   {  
     light_error();

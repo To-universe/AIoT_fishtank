@@ -7,6 +7,9 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel( MAX_LED, PIN, NEO_RGB + NEO_KHZ800 
 uint8_t i = 0;                            
 uint32_t color = strip.Color(75,156,215);   //绿、红、蓝
 
+/**
+ * @brief 本地测试灯的功能
+ */
 void light_test(){
     unsigned long now = millis();
     if(now - lasttime > 500){
@@ -17,13 +20,18 @@ void light_test(){
         strip.show();
     }
 }
-
+/**
+ * @brief 将灯关闭，对应LIGHT_CLOSE
+ */
 void light_close(){
     for(int i = 0;i<MAX_LED;i++){
         strip.setPixelColor(i,strip.Color(0,0,0));
     }
     strip.show();
 }
+/**
+ * @brief 灯的普通监测模式
+ */
 void light_norm(){
     for(int i =0;i<MAX_LED;i++){
         strip.setPixelColor(i,strip.Color(200,0,0));
@@ -36,6 +44,10 @@ void light_warning(){
     }
     strip.show();
 }
+
+/**
+ * @brief 灯的报警模式。如果出现部分传感器数值显著异常，则所有灯变成红灯（在灯带打开的情况下，不论何种模式）
+ */
 void light_error(){
     for(int i =0;i<MAX_LED;i++){
         strip.setPixelColor(i,strip.Color(0,200,0));
@@ -45,6 +57,9 @@ void light_error(){
 
 int n=0;
 int x=0;
+/**
+ * @brief 灯带模式1，呼吸灯。紫色灯亮灭循环
+ */
 void light_mode1(){
     unsigned long now = millis();
     if(now -lasttime >20){

@@ -46,6 +46,10 @@ extern int pump_state_control;
 extern int light_mode;             //灯带模式
 extern float temp_stand;            //设定温度
 
+/**
+ * @brief 设定灯的不同状态
+ * @details LIGHT_CLOSE表示灯全部关闭，LIGHT_NORM表示灯的普通功能（亮绿灯表示没有问题），LIGHT_MODEX表示灯的不同模式（流水灯、呼吸灯等）
+*/
 #define LIGHT_CLOSE 0
 #define LIGHT_NORM 1
 #define LIGHT_MODE1 2

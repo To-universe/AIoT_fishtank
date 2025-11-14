@@ -1,22 +1,25 @@
 #include "MQTT.h"
-//变量定义
+//-----------------变量定义（WIFI变量）-----------------
 const char* wifi_ssid = "XJJ's Find X7";           //WiFi名称
 const char* wifi_password = "u2cqxxr3";       //WiFi密码
-//华为云设备信息
+//---------------华为云设备信息------------------
 const char* CLIENT_ID     = "6913458c2447a4269a5d91b4_ESP32_0_0_2025111311";
 const char* MQTT_USER     = "6913458c2447a4269a5d91b4_ESP32";
 const char* MQTT_PASSWORD = "b2a16bb6b3f14b49c09371e45170791c8178adaa393d49869665efb75c1a17ef";
 const char* MQTT_SERVER   = "14aac91662.st1.iotda-device.cn-east-3.myhuaweicloud.com";  // 华为云MQTT服务器地址
 const int   MQTT_PORT     = 1883;
+
+//-------------全局变量定义（传感器变量）---------------
 float temp;                 //温度传感器数据
 int waterlevel;             //水位数据
 int gravity_adc=0;          //浊度数据
 float ph;                   //ph数据
-int heat_state;             //加热棒状态
-int pump_state;             //水泵状态
+int heat_state;             //加热棒状态，0表示关闭，1表示开启
+int pump_state;             //水泵状态，0表示关闭，1表示开启
 int pump_state_control;
 int light_mode;             //灯带模式
 
+//-----------连接模块对象定义----------------
 WiFiClient espClient;
 PubSubClient client(espClient);
 HardwareSerial mySerial(1);  // 串口1
@@ -72,6 +75,7 @@ void reconnectMQTT() {
 
 /**
  * @brief 上报传感器数据到华为云平台
+ * @details 先将传感器得到的数据打印到串口用于本地检测，接着组合出将要发送给华为云的MQTT信息（用JSON表示）
  */
 void publishSensorData() {
 // 假设传感器数据已通过其他函数更新到全局变量
@@ -103,6 +107,7 @@ void publishSensorData() {
 
 /**
  * @brief MQTT消息回调函数，处理平台下发的命令
+ * @details 解析华为云平台下发的命令，主要包括4个内容：1.水泵开启与关闭。2.加热棒开启与关闭。3.灯带开启、关闭、模式选择。4.预设温度的自定义（用于选择鱼缸保温到哪个温度）
  */
 void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println("\n接收平台下发消息");
