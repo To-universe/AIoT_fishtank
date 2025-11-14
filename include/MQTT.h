@@ -42,16 +42,15 @@ extern unsigned long tdsValue;        //浊度数据
 extern float ph;                   //ph数据
 extern int heat_state;             //加热棒状态
 extern int pump_state;             //水泵状态
+extern int pump_state_control;
 extern int light_mode;             //灯带模式
 extern float temp_stand;            //设定温度
 
 #define LIGHT_CLOSE 0
 #define LIGHT_NORM 1
-#define LIGHT_WARN 2
-#define LIGHT_ERROR 3
-#define LIGHT_MODE1 4
-#define LIGHT_MODE2 5
-#define LIGHT_MODE3 6
+#define LIGHT_MODE1 2
+#define LIGHT_MODE2 3
+#define LIGHT_MODE3 4
 
 //函数声明
 void setupWiFi();

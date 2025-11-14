@@ -69,10 +69,15 @@ void setup() {
 
   pinMode(HEAT_PIN,OUTPUT);
 
-  temp_stand = 0;
+  temp_stand = 20;
 
   currentTime = millis();
   reportTime = millis();
+
+  heat_state = 0;
+  pump_state = 0;
+  pump_state_control=0;
+  light_mode = LIGHT_NORM;
 
   //-----------MQTT连接---------------------
   Serial.begin(115200,SERIAL_8N1);
@@ -114,20 +119,56 @@ void loop() {
   }
 
 //-----------------灯带控制---------------------
-if(temp > 27){
-  light_warning();
-}else{
-  light_norm();
+if(light_mode==LIGHT_CLOSE){
+  light_close();
+}else if(light_mode == LIGHT_NORM){
+  if(
+    0     //temp > temp_stand+10||tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3
+  )
+  {
+    light_error();
+  }else{
+    light_norm();
+  }
+}else if(light_mode== LIGHT_MODE1){
+  if(
+    0     //temp > temp_stand+10||tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3
+  )
+  {  
+    light_error();
+  }else{
+    light_mode1();
+  }
 }
+
   
 //----------------水温控制---------------
   if(temp > temp_stand+5.0){
-    digitalWrite(HEAT_PIN,LOW);
+    heat_state = 0;
   }else if(temp < temp_stand-5.0){
-    digitalWrite(HEAT_PIN,HIGH);
+    heat_state = 1;
   }
 
-  
+  if(heat_state){
+    digitalWrite(HEAT_PIN,HIGH);
+  }else{
+    digitalWrite(HEAT_PIN,LOW);
+  }
+
+//------------水泵控制---------------
+  if(pump_state_control && waterlevel >0){
+    pump_state = 1;
+  }else if(tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3){
+    pump_state = 1;
+  }else{
+    pump_state = 0;
+  }
+
+  if(pump_state){
+    digitalWrite(PumpPin,HIGH);
+  }else{
+    digitalWrite(PumpPin,LOW);
+  }
 }
 
 // put function definitions here:

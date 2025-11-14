@@ -14,6 +14,7 @@ int gravity_adc=0;          //浊度数据
 float ph;                   //ph数据
 int heat_state;             //加热棒状态
 int pump_state;             //水泵状态
+int pump_state_control;
 int light_mode;             //灯带模式
 
 WiFiClient espClient;
@@ -124,20 +125,23 @@ void callback(char* topic, byte* payload, unsigned int length) {
         }
     
         // 提取控制参数
-        if (doc["paras"].containsKey("HeatState")) {
-            heat_state = doc["paras"]["HeatState"];
+        if (doc["paras"].containsKey("HEATER_STATE")) {
+            heat_state = doc["paras"]["HEATER_STATE"];
         }
-        if (doc["paras"].containsKey("PumpState")) {
-            pump_state = doc["paras"]["PumpState"];
+        if (doc["paras"].containsKey("PUMP_STATE")) {
+            pump_state_control = doc["paras"]["PUMP_STATE"];
         }
-        if (doc["paras"].containsKey("LightMode")) {
-            light_mode = doc["paras"]["LightMode"];
+        if (doc["paras"].containsKey("LIGHT_STATE")) {
+            light_mode = doc["paras"]["LIGHT_STATE"];
+        }
+        if(doc["paras"].containsKey("TEMP_SETTING")){
+          temp_stand = doc["paras"]["TEMP_SETTING"];
         }
     
         // 打印接收到的参数
         Serial.println("解析的参数:");
-        Serial.printf("HeatState: %d, PumpState: %d, LightMode: %d\n", 
-                      heat_state, pump_state, light_mode);
+        Serial.printf("HeatState: %d, PumpState: %d, LightMode: %d,温度阈值：%f\n", 
+                      heat_state, pump_state_control, light_mode,temp_stand);
     
         // （假设硬件控制逻辑由其他函数处理）
         // 这里仅更新全局变量，实际控制需根据硬件实现

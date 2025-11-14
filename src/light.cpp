@@ -19,26 +19,54 @@ void light_test(){
 }
 
 void light_close(){
-    for(int i = 0;i<30;i++){
+    for(int i = 0;i<MAX_LED;i++){
         strip.setPixelColor(i,strip.Color(0,0,0));
     }
     strip.show();
 }
 void light_norm(){
-    for(int i =0;i<30;i++){
+    for(int i =0;i<MAX_LED;i++){
         strip.setPixelColor(i,strip.Color(200,0,0));
     }
     strip.show();
 }
 void light_warning(){
-    for(int i =0;i<30;i++){
+    for(int i =0;i<MAX_LED;i++){
         strip.setPixelColor(i,strip.Color(150,200,0));
     }
     strip.show();
 }
 void light_error(){
-    for(int i =0;i<30;i++){
+    for(int i =0;i<MAX_LED;i++){
         strip.setPixelColor(i,strip.Color(0,200,0));
     }
     strip.show();
+}
+
+int n=0;
+int x=0;
+void light_mode1(){
+    unsigned long now = millis();
+    if(now -lasttime >20){
+        lasttime = now;
+        if(n ==0){
+            for(int i =0;i<MAX_LED;i++){
+                strip.setPixelColor(i,strip.Color(0,x,x));
+            }
+            strip.show();
+            x+=1;
+        }else if(n==1){
+            for(int i =0;i<MAX_LED;i++){
+                strip.setPixelColor(i,strip.Color(0,x,x));
+            }
+            strip.show();
+            x-=1;
+        }
+
+        if(x>=200){
+            n=1;
+        }else if(x<=0){
+            n=0;
+        }
+    }
 }

@@ -2,7 +2,7 @@
 #include "Adafruit_NeoPixel.h"
 
 #define PIN 5                        // Define the pins of the RGB light
-#define MAX_LED 30                   //64 RGB light
+#define MAX_LED 50                   //64 RGB light
 
 extern Adafruit_NeoPixel strip;
 extern uint8_t i;                            
