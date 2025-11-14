@@ -9,7 +9,7 @@
 // put global variables here:
 
 //PH传感器
-#define PHSensorPIN 35    //模拟引脚
+#define PHSensorPIN 33    //模拟引脚
 #define Offset 0.15
 unsigned long int avgValue;
 
@@ -75,14 +75,15 @@ void setup() {
   light_mode = LIGHT_NORM;          //设定灯带状态
 
   //-----------MQTT连接---------------------
-  Serial.begin(115200,SERIAL_8N1);
-  mySerial.begin(115200,SERIAL_8N1,19,23);
+  // Serial.begin(115200,SERIAL_8N1);
+  // mySerial.begin(115200,SERIAL_8N1,19,23);
   analogReadResolution(10);
 
   setupWiFi();//连接WiFi
   setupMQTT();//初始化MQTT
 }
 
+int light_now;
 void loop() {
   // put your main code here, to run repeatedly:
   //检查MQTT连接，断开则重连
@@ -95,16 +96,27 @@ void loop() {
   //----------------传感器读取--------------------
   tdsCalibrationProcess();
   gravityTDS.update();
-  if(millis()-currentTime>5000){      //每5s读取一次所有传感器的数据
+  if(millis()-currentTime>1000){      //每5s读取一次所有传感器的数据
      currentTime = millis();
     //浊度传感器
     tdsValue=TDSValueRead();
+    // Serial.print("浊度：");
+    // Serial.print(tdsValue);
+    // Serial.println("ppm");
     //DS18B20温度传感器
     temp = TempRead();
+    // Serial.print("温度：");
+    // Serial.println(temp);
     //PH传感器
-    ph = PHValueRead()-7;
+    ph = PHValueRead();
+    // Serial.print("PH值：");
+    // Serial.println(ph);
     //水位传感器
     waterlevel =waterLevelRead();
+    // Serial.print("水位：");
+    // Serial.println(waterlevel);
+    // Serial.println(light_now);
+    // Serial.println("-----------------");
   }
 
   //每5s上报传感器数据
@@ -116,18 +128,21 @@ void loop() {
 //-----------------灯带控制---------------------
 if(light_mode==LIGHT_CLOSE){
   light_close();
+  light_now=0;
 }else if(light_mode == LIGHT_NORM){
   if(
-    temp > temp_stand+10||tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3
+    temp > temp_stand+10||tdsValue > 4500 || ph<4 || waterlevel >1000
   )
   {
     light_error();
+    light_now = 1;
   }else{
     light_norm();
+    light_now =0;
   }
 }else if(light_mode== LIGHT_MODE1){
   if(
-    temp > temp_stand+10||tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3
+    temp > temp_stand+10||tdsValue > 4500|| ph<4 || waterlevel >1000
   )
   {  
     light_error();
@@ -153,7 +168,7 @@ if(light_mode==LIGHT_CLOSE){
 //------------水泵控制---------------
   if(pump_state_control && waterlevel >0){
     pump_state = 1;
-  }else if(tdsValue > 4500 || ph > 9 || ph<4 || waterlevel >3){
+  }else if(tdsValue > 4500 ||ph<4 || waterlevel >1000){
     pump_state = 1;
   }else{
     pump_state = 0;
@@ -191,7 +206,7 @@ float PHValueRead(){
   avgValue = 0;
   for(int i=2;i<8;i++)
     avgValue+=buf[i];
-  float phValue=(float)avgValue*5.0/1024/6;
+  float phValue=(float)avgValue*5/1024/6;
   float PH = 14-5.112*(phValue-1.758)*Offset;
   return PH;
 }
